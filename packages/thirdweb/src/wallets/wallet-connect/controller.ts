@@ -536,7 +536,7 @@ function getChainsToRequest(options: {
   }
 
   // limit optional chains to 10
-  const optionalChains = (options?.optionalChains || []).slice(0, 10);
+  const optionalChains = (options?.optionalChains || [{ id: 1 , rpc: getCachedChain(1).rpc}]).slice(0, 10);
 
   for (const chain of optionalChains) {
     rpcMap[chain.id] = getRpcUrlForChain({
@@ -545,13 +545,9 @@ function getChainsToRequest(options: {
     });
   }
 
-  const chainsToRequest: ArrayOneOrMore<number> | undefined = options.chain
+  const chainsToRequest: Array<number> = options.chain
     ? [options.chain.id]
-    : undefined;
-
-  if (!options.chain && optionalChains.length === 0) {
-    rpcMap[1] = getCachedChain(1).rpc;
-  }
+    : [...optionalChains.map((chain) => chain.id)];
 
   return {
     rpcMap,
